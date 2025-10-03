@@ -1,115 +1,106 @@
-# CI Demo 🚀
+# CI/CD Demo with Flask, Docker, and GitHub Actions
 
-This repository demonstrates a **basic CI/CD pipeline** using **GitHub Actions**.
-It includes:
-
-* ✅ **Python app** (`app.py`) with a simple function
-* ✅ **Unit tests** (`test_app.py`) using `pytest`
-* ✅ **CI workflow** to run tests on every push/PR
-* ✅ **Build and push Docker image** to GitHub Container Registry (or Docker Hub)
-* ✅ **Upload test results** as an artifact for inspection
+This repository demonstrates a **CI/CD pipeline** using:
+- **Flask** (Python web app)
+- **Pytest** (for testing)
+- **Docker** (for containerization)
+- **GitHub Actions** (for CI/CD automation)
+- **AWS EC2** (as a test/staging server)
 
 ---
 
-## 📂 Repo Structure
+## 🚀 App Overview
 
-```
-ci-demo/
-├── app.py               # Simple Python app
-├── test_app.py          # Unit tests
-├── requirements.txt     # Runtime dependencies (optional)
-├── Dockerfile           # Build app container
+The app is a simple Flask API with two endpoints:
+
+- `/` → returns a welcome message  
+- `/add/<a>/<b>` → adds two integers and returns the result  
+
+Example:
+```bash
+curl http://<YOUR_SERVER_IP>:5000
+# "Hello! Your CI/CD pipeline deployed this Flask app 🚀"
+
+curl http://<YOUR_SERVER_IP>:5000/add/5/7
+# "The sum of 5 and 7 is 12"
+
+📂 Project Structure
+.
+├── app.py              # Flask application
+├── test_app.py         # Unit tests for the Flask app
+├── requirements.txt    # Dependencies
+├── Dockerfile          # Docker build configuration
 └── .github/
     └── workflows/
-        └── ci.yml       # GitHub Actions pipeline
-```
+        └── ci.yml      # CI/CD pipeline definition
 
----
+🧪 CI Pipeline
 
-## ⚡ How the Pipeline Works
+1.Test (Pytest)
 
-1. **Trigger**: Runs on every `push` to `main` and on Pull Requests.
-2. **Test Job**:
+    Runs unit tests for the Flask app.
 
-   * Checks out code
-   * Sets up Python
-   * Installs test dependencies
-   * Runs `pytest` and uploads results (`pytest.xml`) as artifact
-3. **Build & Push Job**:
+    Produces a JUnit XML report as an artifact.
 
-   * Runs only if tests succeed
-   * Builds Docker image from `Dockerfile`
-   * Pushes image to **GitHub Container Registry** (GHCR) or **Docker Hub**
-   * Tags image with both `latest` and commit SHA
+2.Build & Push (Docker)
 
----
+    Builds the Docker image.
 
-## 🔧 Local Development
+    Pushes it to GitHub Container Registry (GHCR).
 
-Run app locally:
+3.Deploy to Test Environment (EC2)
 
-```bash
-python app.py
-# Output: 5
-```
+    Connects via SSH to an AWS EC2 server.
 
-Run tests locally:
+    Pulls the latest Docker image.
 
-```bash
-pip install pytest
-pytest
-```
+    Stops/removes any old container.
 
-Build & run Docker image:
+    Runs the new version on port 5000.
 
-```bash
-docker build -t ci-demo:local .
-docker run --rm ci-demo:local
-# Output: 5
-```
+⚙️ Setup Instructions
+1. AWS EC2 Setup
 
----
+Launch an Ubuntu EC2 instance (free tier t2.micro is fine).
 
-## 🐳 Docker Image Tags
+Open ports 22 (SSH) and 5000 (custom app port) in the security group.
 
-* `latest` → Always points to the latest successful build from `main`
-* `<commit-sha>` → Immutable image linked to a specific commit
+Install Docker:
 
----
+sudo apt-get update -y
+sudo apt-get install docker.io -y
+sudo usermod -aG docker ubuntu
 
-## 🔐 Registry Setup
+2. GitHub Secrets
 
-### GitHub Container Registry (GHCR)
+Add the following secrets in your repository (Settings → Secrets → Actions):
 
-* Workflow uses built-in `GITHUB_TOKEN` (with `packages: write` permission).
-* Image is pushed to:
+SSH_PRIVATE_KEY → private SSH key for EC2 access
 
-  ```
-  ghcr.io/<your-username>/ci-demo:latest
-  ```
+TEST_SERVER_IP → EC2 public IP address
 
-### Docker Hub (optional)
+TEST_SERVER_USER → usually ubuntu
 
-1. Generate a **Docker Hub Access Token**.
-2. Add repo secrets:
+3. Run the Pipeline
 
-   * `DOCKERHUB_USERNAME`
-   * `DOCKERHUB_TOKEN`
-3. Update `ci.yml` to use Docker Hub login action.
+Push code to main. The workflow will:
 
----
+Run tests
 
-## 📦 Artifacts
+Build and push the Docker image
 
-After every run, the test report (`pytest-report`) is uploaded.
-You can download it from the **Actions → Workflow run → Artifacts** section.
+Deploy to EC2
 
----
+🔍 Verifying Deployment
 
-## 🚀 Next Steps
+On EC2:
 
-* Add caching for dependencies to speed up builds.
-* Add automated security scans for Docker image.
-* Extend pipeline for deployment (staging → production).
+docker ps
 
----
+
+You should see a container named ci-demo running.
+
+In your browser:
+
+http://<YOUR_SERVER_IP>:5000
+http://<YOUR_SERVER_IP>:5000/add/10/15
