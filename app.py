@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "Hello! Your CI/CD pipeline deployed this Flask app 🚀"
+    return "Hello! Your CI/CD pipeline deployed this Flask app "
 
 @app.route("/add/<int:a>/<int:b>")
 def add(a, b):
