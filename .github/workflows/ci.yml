@@ -63,3 +63,20 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/ci-demo:latest,ghcr.io/${{ github.repository_owner }}/ci-demo:${{ github.sha }}
+  deploy-to-test:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy app to Test Server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.TEST_SERVER_USER }}@${{ secrets.TEST_SERVER_IP }} << 'EOF'
+            docker pull ghcr.io/${{ github.repository_owner }}/ci-demo:latest
+            docker stop ci-demo || true
+            docker rm ci-demo || true
+            docker run -d --name ci-demo -p 5000:5000 ghcr.io/${{ github.repository_owner }}/ci-demo:latest
+          EOF
