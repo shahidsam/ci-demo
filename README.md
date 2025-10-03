@@ -112,3 +112,9 @@ In your browser:
 
 http://<YOUR_SERVER_IP>:5000
 http://<YOUR_SERVER_IP>:5000/add/10/15
+
+## 🔄 CI/CD Workflow
+
+![CI/CD Pipeline](cicd_pipeline.png)
+
+
