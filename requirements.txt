@@ -1,1 +1,3 @@
-# runtime requirements
+flask
+pytest
+
