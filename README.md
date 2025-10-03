@@ -38,7 +38,7 @@ curl http://<YOUR_SERVER_IP>:5000/add/5/7
 
 ---
 
-🧪 CI Pipeline
+**🧪 CI Pipeline**
 
 1.Test (Pytest)
 
@@ -64,7 +64,7 @@ curl http://<YOUR_SERVER_IP>:5000/add/5/7
 
 ---
 
-⚙️ Setup Instructions
+**⚙️ Setup Instructions**
 1. AWS EC2 Setup
 
 Launch an Ubuntu EC2 instance (free tier t2.micro is fine).
@@ -99,7 +99,7 @@ Deploy to EC2
 
 ---
 
-🔍 Verifying Deployment
+**🔍 Verifying Deployment**
 
 On EC2:
 
@@ -112,9 +112,3 @@ In your browser:
 
 http://<YOUR_SERVER_IP>:5000
 http://<YOUR_SERVER_IP>:5000/add/10/15
-
-## 🔄 CI/CD Workflow
-
-![CI/CD Pipeline](cicd_pipeline.png)
-
-
