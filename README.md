@@ -24,7 +24,7 @@ curl http://<YOUR_SERVER_IP>:5000
 curl http://<YOUR_SERVER_IP>:5000/add/5/7
 # "The sum of 5 and 7 is 12"
 
-📂 Project Structure
+## 📂 Project Structure
 .
 ├── app.py              # Flask application
 ├── test_app.py         # Unit tests for the Flask app
@@ -34,7 +34,7 @@ curl http://<YOUR_SERVER_IP>:5000/add/5/7
     └── workflows/
         └── ci.yml      # CI/CD pipeline definition
 
-🧪 CI Pipeline
+## 🧪 CI Pipeline
 
 1.Test (Pytest)
 
@@ -58,7 +58,7 @@ curl http://<YOUR_SERVER_IP>:5000/add/5/7
 
     Runs the new version on port 5000.
 
-⚙️ Setup Instructions
+## ⚙️ Setup Instructions
 1. AWS EC2 Setup
 
 Launch an Ubuntu EC2 instance (free tier t2.micro is fine).
@@ -91,7 +91,7 @@ Build and push the Docker image
 
 Deploy to EC2
 
-🔍 Verifying Deployment
+## 🔍 Verifying Deployment
 
 On EC2:
 
