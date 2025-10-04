@@ -44,22 +44,58 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/ci-demo:latest
 
-  deploy-to-test:
+#   deploy-to-test:
+#     needs: build-and-push
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Setup SSH
+#         uses: webfactory/ssh-agent@v0.8.0
+#         with:
+#           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+#       - name: Deploy app to Test Server
+#         run: |
+#           ssh -o StrictHostKeyChecking=no ${{ secrets.TEST_SERVER_USER }}@${{ secrets.TEST_SERVER_IP }} << 'EOF'
+#             docker pull ghcr.io/${{ github.repository_owner }}/ci-demo:latest
+#             docker stop ci-demo || true
+#             docker rm ci-demo || true
+#             docker run -d --name ci-demo -p 5000:5000 ghcr.io/${{ github.repository_owner }}/ci-demo:latest
+#           EOF
+  deploy-to-staging:
     needs: build-and-push
     runs-on: ubuntu-latest
+    environment: staging
     steps:
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy app to Test Server
+      - name: Deploy app to Staging (Port 5000)
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.TEST_SERVER_USER }}@${{ secrets.TEST_SERVER_IP }} << 'EOF'
-            docker pull ghcr.io/${{ github.repository_owner }}/ci-demo:latest
-            docker stop ci-demo || true
-            docker rm ci-demo || true
-            docker run -d --name ci-demo -p 5000:5000 ghcr.io/${{ github.repository_owner }}/ci-demo:latest
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            docker pull ghcr.io/${{ github.repository_owner }}/ci-demo:staging
+            docker stop ci-demo-staging || true
+            docker rm ci-demo-staging || true
+            docker run -d --name ci-demo-staging -p 5000:5000 ghcr.io/${{ github.repository_owner }}/ci-demo:staging
           EOF
 
-          
+  deploy-to-production:
+    needs: deploy-to-staging
+    runs-on: ubuntu-latest
+    environment: production   # requires approval in GitHub UI
+    steps:
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy app to Production (Port 80)
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            docker pull ghcr.io/${{ github.repository_owner }}/ci-demo:prod
+            docker stop ci-demo-prod || true
+            docker rm ci-demo-prod || true
+            docker run -d --name ci-demo-prod -p 80:5000 ghcr.io/${{ github.repository_owner }}/ci-demo:prod
+          EOF
+
