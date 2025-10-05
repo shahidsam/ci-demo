@@ -76,12 +76,21 @@ jobs:
 
       - name: Deploy app to Staging (Port 5000)
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            # Kill any container using port 5000
+            CONTAINER_ID=$(docker ps -q --filter "publish=5000")
+            if [ ! -z "$CONTAINER_ID" ]; then
+                docker stop $CONTAINER_ID || true
+                docker rm $CONTAINER_ID || true
+            fi
+
+            # Pull and redeploy
             docker pull ghcr.io/${{ github.repository_owner }}/ci-demo:staging
             docker stop ci-demo-staging || true
             docker rm ci-demo-staging || true
             docker run -d --name ci-demo-staging -p 5000:5000 ghcr.io/${{ github.repository_owner }}/ci-demo:staging
-          EOF
+            EOF
+
 
   deploy-to-production:
     needs: deploy-to-staging
@@ -95,10 +104,19 @@ jobs:
 
       - name: Deploy app to Production (Port 80)
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            # Kill any container using port 80
+            CONTAINER_ID=$(docker ps -q --filter "publish=80")
+            if [ ! -z "$CONTAINER_ID" ]; then
+                docker stop $CONTAINER_ID || true
+                docker rm $CONTAINER_ID || true
+            fi
+
+            # Pull and redeploy production container
             docker pull ghcr.io/${{ github.repository_owner }}/ci-demo:prod
             docker stop ci-demo-prod || true
             docker rm ci-demo-prod || true
             docker run -d --name ci-demo-prod -p 80:5000 ghcr.io/${{ github.repository_owner }}/ci-demo:prod
-          EOF
+            EOF
+
 
