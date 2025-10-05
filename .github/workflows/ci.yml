@@ -17,11 +17,13 @@ jobs:
         with:
           python-version: '3.11'
       - run: |
-          pip install pytest
-          pytest --junitxml=pytest.xml
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - run: pytest --junitxml==pytest.xml
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: test-report
+          name: pytest-report
           path: pytest.xml
 
   # ---- Build ----
