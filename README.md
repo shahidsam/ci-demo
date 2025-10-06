@@ -1,114 +1,93 @@
-# CI/CD Demo with Flask, Docker, and GitHub Actions
+CI/CD Pipeline: Multi-Environment Deployment (Dev → Staging → Prod)
 
-This repository demonstrates a **CI/CD pipeline** using:
-- **Flask** (Python web app)
-- **Pytest** (for testing)
-- **Docker** (for containerization)
-- **GitHub Actions** (for CI/CD automation)
-- **AWS EC2** (as a test/staging server)
+This project demonstrates a complete CI/CD pipeline using GitHub Actions, Docker, and a Linux VM as a deployment target.
+It covers automated testing, image building, multi-environment deployment, approval gates, Slack notifications, and secrets management.
 
----
+🧱 Pipeline Stages
+Stage	Purpose	Description
+Test	Continuous Integration	Runs automated unit tests using pytest and uploads reports.
+Build	Build & Publish	Builds Docker image and pushes it to GitHub Container Registry (GHCR).
+Deploy to Dev	Continuous Delivery	Automatically deploys the built image to a dev environment (port 5000).
+Deploy to Staging	QA/Pre-Production	Deploys the same image to staging environment (port 5001) for testing.
+Deploy to Prod	Production Deployment	Deploys to production environment (port 80) with manual approval gate.
+Notify	Slack Notification	Sends a Slack message after successful production deployment.
+🧩 Technologies Used
 
-## 🚀 App Overview
+GitHub Actions – CI/CD automation
 
-The app is a simple Flask API with two endpoints:
+Docker – Containerization
 
-- `/` → returns a welcome message  
-- `/add/<a>/<b>` → adds two integers and returns the result  
+GHCR (GitHub Container Registry) – Image hosting
 
-Example:
-```bash
-curl http://<YOUR_SERVER_IP>:5000
-# "Hello! Your CI/CD pipeline deployed this Flask app 🚀"
+Slack Webhook – Deployment notifications
 
-curl http://<YOUR_SERVER_IP>:5000/add/5/7
-# "The sum of 5 and 7 is 12"
+SSH – Secure remote deployments
 
----
+Python + Pytest – Example application and test framework
 
-📂 Project Structure
-.
-├── app.py              # Flask application
-├── test_app.py         # Unit tests for the Flask app
-├── requirements.txt    # Dependencies
-├── Dockerfile          # Docker build configuration
-└── .github/
-    └── workflows/
-        └── ci.yml      # CI/CD pipeline definition
+⚙️ Environment Setup
+1. Create GitHub Environments
 
----
+Go to:
+Settings → Environments → New Environment
 
-** 🧪 CI Pipeline **
+Create:
 
-1.Test (Pytest)
+dev
 
-    Runs unit tests for the Flask app.
+staging
 
-    Produces a JUnit XML report as an artifact.
+production
 
-2.Build & Push (Docker)
+2. Add Secrets to Each Environment
+Secret Name	Description
+SSH_PRIVATE_KEY	Private SSH key to connect to VM
+SERVER_IP	Target server’s IP address
+SERVER_USER	Server username (e.g., ubuntu, root)
+SLACK_WEBHOOK_URL	Slack incoming webhook URL (for notifications)
 
-    Builds the Docker image.
+For production, set Required Reviewers → adds a manual approval gate.
 
-    Pushes it to GitHub Container Registry (GHCR).
+🧾 Workflow Overview (.github/workflows/ci.yml)
 
-3.Deploy to Test Environment (EC2)
+The pipeline runs automatically when code is pushed to:
 
-    Connects via SSH to an AWS EC2 server.
+main
 
-    Pulls the latest Docker image.
+develop
 
-    Stops/removes any old container.
+release/* branches.
 
-    Runs the new version on port 5000.
+Job Flow
 
----
+test → build → deploy-dev → deploy-staging → deploy-prod → notify
 
-** ⚙️ Setup Instructions **
-1. AWS EC2 Setup
+Production job requires manual approval before running.
 
-Launch an Ubuntu EC2 instance (free tier t2.micro is fine).
+🌍 Accessing Deployed Environments
+Environment	URL Example	Port
+Dev	http://<SERVER_IP>:5000	5000
+Staging	http://<SERVER_IP>:5001	5001
+Prod	http://<SERVER_IP>	80
 
-Open ports 22 (SSH) and 5000 (custom app port) in the security group.
+Check running containers:
 
-Install Docker:
-
-sudo apt-get update -y
-sudo apt-get install docker.io -y
-sudo usermod -aG docker ubuntu
-
-2. GitHub Secrets
-
-Add the following secrets in your repository (Settings → Secrets → Actions):
-
-SSH_PRIVATE_KEY → private SSH key for EC2 access
-
-TEST_SERVER_IP → EC2 public IP address
-
-TEST_SERVER_USER → usually ubuntu
-
-3. Run the Pipeline
-
-Push code to main. The workflow will:
-
-Run tests
-
-Build and push the Docker image
-
-Deploy to EC2
-
----
-
-** 🔍 Verifying Deployment **
-
-On EC2:
-
+ssh <SERVER_USER>@<SERVER_IP>
 docker ps
 
 
-You should see a container named ci-demo running.
+View logs:
 
-In your browser:
+docker logs ci-demo-prod
 
-http://<YOUR_SERVER_IP>:5000
-http://<YOUR_SERVER_IP>:5000/add/10/15
+🧠 Key Learnings
+
+End-to-end automation using GitHub Actions.
+
+Multi-environment pipelines with approval gates.
+
+Secure secret management through GitHub Environments.
+
+Continuous feedback via Slack notifications.
+
+Practical container deployment to remote VM.
