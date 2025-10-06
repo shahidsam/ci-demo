@@ -1,4 +1,4 @@
-CI/CD Pipeline: Multi-Environment Deployment (Dev → Staging → Prod)
+# CI/CD Pipeline: Multi-Environment Deployment (Dev → Staging → Prod)
 
 This project demonstrates a complete CI/CD pipeline using GitHub Actions, Docker, and a Linux VM as a deployment target.
 It covers automated testing, image building, multi-environment deployment, approval gates, Slack notifications, and secrets management.
@@ -12,30 +12,34 @@ It covers automated testing, image building, multi-environment deployment, appro
 | **Deploy to Prod**    | Production Deployment  | Deploys to production environment (port 80) with **manual approval** gate. |
 | **Notify**            | Slack Notification     | Sends a Slack message after successful production deployment.              |
 
-🧩 Technologies Used
+## 🧩 Technologies Used
 
-*) GitHub Actions – CI/CD automation
+- GitHub Actions – CI/CD automation
 
-*) Docker – Containerization
+- Docker – Containerization
 
-*) GHCR (GitHub Container Registry) – Image hosting
+- GHCR (GitHub Container Registry) – Image hosting
 
-*) Slack Webhook – Deployment notifications
+- Slack Webhook – Deployment notifications
 
-*) SSH – Secure remote deployments
+- SSH – Secure remote deployments
 
-*) Python + Pytest – Example application and test framework
+- Python + Pytest – Example application and test framework
 
-⚙️ Environment Setup
+## ⚙️ Environment Setup
 1. Create GitHub Environments
 
 Go to:
+
 Settings → Environments → New Environment
 
 Create:
-*) dev
-*) staging
-*) production
+
+- dev
+
+- staging
+
+- production
 
 | Secret Name         | Description                                    |
 | ------------------- | ---------------------------------------------- |
@@ -44,17 +48,22 @@ Create:
 | `SERVER_USER`       | Server username (e.g., ubuntu, root)           |
 | `SLACK_WEBHOOK_URL` | Slack incoming webhook URL (for notifications) |
 
-🧾 Workflow Overview (.github/workflows/ci.yml)
+## 🧾 Workflow Overview (.github/workflows/ci.yml)
 
 The pipeline runs automatically when code is pushed to:
 
-* main
-* develop
-* release/* branches.
+- main
+
+- develop
+
+- release/* branches.
 
 Job Flow
-*) test → build → deploy-dev → deploy-staging → deploy-prod → notify
-*) Production job requires manual approval before running.
+
+- test → build → deploy-dev → deploy-staging → deploy-prod → notify
+
+- Production job requires manual approval before running.
+
 
 | Environment | URL Example                | Port |
 | ----------- | -------------------------- | ---- |
@@ -71,23 +80,17 @@ View Logs:
 
 docker logs ci-demo-prod
 
-🧠 Key Learnings
+## 🧠 Key Learnings
 
-*) End-to-end automation using GitHub Actions.
-*) Multi-environment pipelines with approval gates.
-*) Secure secret management through GitHub Environments.
-*) Continuous feedback via Slack notifications.
-*) Practical container deployment to remote VM.
+- End-to-end automation using GitHub Actions.
 
+- Multi-environment pipelines with approval gates.
 
+- Secure secret management through GitHub Environments.
 
+- Continuous feedback via Slack notifications.
 
-
-
-
-
-
-
+- Practical container deployment to remote VM.
 
 
 
