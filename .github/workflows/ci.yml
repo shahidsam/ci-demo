@@ -107,6 +107,7 @@ jobs:
   notify:
     needs: [deploy-prod]
     runs-on: ubuntu-latest
+    environment: production
     if: always()
     steps:
       - name: Notify Slack
@@ -114,7 +115,7 @@ jobs:
         with:
           payload: |
             {
-              "text": " Deployment complete for Production!\nEnvironment: Production\nCommit: ${{ github.sha }}\nStatus: ${{ job.status }}"
+              "text": " Deployment complete for *Production*!\nEnvironment: Production\nCommit: ${{ github.sha }}\nStatus: ${{ job.status }}"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
