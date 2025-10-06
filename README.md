@@ -15,10 +15,15 @@ It covers automated testing, image building, multi-environment deployment, appro
 🧩 Technologies Used
 
 *) GitHub Actions – CI/CD automation
+
 *) Docker – Containerization
+
 *) GHCR (GitHub Container Registry) – Image hosting
+
 *) Slack Webhook – Deployment notifications
+
 *) SSH – Secure remote deployments
+
 *) Python + Pytest – Example application and test framework
 
 ⚙️ Environment Setup
